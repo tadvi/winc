@@ -1,6 +1,6 @@
 # winc
 
-Windows Common library for GUI apps brings user interface programming to Go. This is Windows only UI toolkit. This makes library smaller than some other UI libraries for Go.
+Common library for Go GUI apps on Windows. This is Windows OS only toolkit. It makes library smaller than some other UI libraries for Go.
 
 Design goals: minimalism and simplicity.
 
