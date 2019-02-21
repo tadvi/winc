@@ -1,6 +1,6 @@
 # winc
 
-Common library for Go GUI apps on Windows. It is Windows OS only toolkit. This makes library smaller than some other UI libraries for Go.
+Common library for Go GUI apps on Windows. It is for Windows OS only. This makes library smaller than some other UI libraries for Go.
 
 Design goals: minimalism and simplicity.
 
@@ -62,7 +62,7 @@ const myIcon = 13
 btn.SetResIcon(myIcon) // Set icon on the button.
 ```
 
-Included source **samples** use basic building via `release.bat` files. Note that icon IDs are order dependent. So if you change they order in -ico flag then icon IDs will be different. If you want to keep order the same, just add new icons to the end of -ico comma separated list.
+Included source **examples** use basic building via `release.bat` files. Note that icon IDs are order dependent. So if you change they order in -ico flag then icon IDs will be different. If you want to keep order the same, just add new icons to the end of -ico comma separated list.
 
 ## Layout Manager
 
@@ -139,6 +139,10 @@ When developing your own controls you might also need to:
 w32 has Win32 API low level constants and functions.
 
 Look at **sample_control** for example of custom built window.
+
+## Companion Package
+
+[Go package for Windows Systray icon, menu and notifications](https://github.com/tadvi/systray)
 
 ## Credits
 
