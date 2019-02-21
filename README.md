@@ -1,20 +1,12 @@
 # winc
 
-Common library for Go GUI apps on Windows. This is Windows OS only toolkit. It makes library smaller than some other UI libraries for Go.
+Common library for Go GUI apps on Windows. It is Windows OS only toolkit. This makes library smaller than some other UI libraries for Go.
 
 Design goals: minimalism and simplicity.
 
 ## Dependencies
 
 No other dependencies except Go standard library.
-
-## Credits
-
-This library is built on
-
-[AllenDang/gform Windows GUI framework for Go](https://github.com/AllenDang/gform)
-
-**winc** takes most design decisions from **gform** and adds many more controls and code samples to it.
 
 ## Building
 
@@ -41,7 +33,7 @@ Most Windows applications do not display command prompt. Build your Go project w
 
 ## Samples
 
-Best way to learn how to use the library is to look at the included **sample** projects.
+Best way to learn how to use the library is to look at the included **examples** projects.
 
 ## Setup
 
@@ -147,3 +139,13 @@ When developing your own controls you might also need to:
 w32 has Win32 API low level constants and functions.
 
 Look at **sample_control** for example of custom built window.
+
+## Credits
+
+This library is built on
+
+[AllenDang/gform Windows GUI framework for Go](https://github.com/AllenDang/gform)
+
+**winc** takes most design decisions from **gform** and adds many more controls and code samples to it.
+
+
