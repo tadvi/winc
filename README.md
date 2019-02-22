@@ -16,15 +16,15 @@ If you want to package icon files and other resources into binary **rsrc** tool 
 
 Here app.manifest is XML file in format:
 ```
-    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-    <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-        <assemblyIdentity version="1.0.0.0" processorArchitecture="*" name="App" type="win32"/>
-        <dependency>
-            <dependentAssembly>
-                <assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="*" publicKeyToken="6595b64144ccf1df" language="*"/>
-            </dependentAssembly>
-        </dependency>
-    </assembly>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+    <assemblyIdentity version="1.0.0.0" processorArchitecture="*" name="App" type="win32"/>
+    <dependency>
+        <dependentAssembly>
+            <assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="*" publicKeyToken="6595b64144ccf1df" language="*"/>
+        </dependentAssembly>
+    </dependency>
+</assembly>
 ```
 
 Most Windows applications do not display command prompt. Build your Go project with flag to indicate that it is Windows GUI binary:
@@ -119,7 +119,7 @@ func wndOnClose(arg *winc.Event) {
 }
 ```
 
-![Hello World](hello.png)
+![Hello World](examples/hello.png)
 
 Result of running sample_minimal.
 
