@@ -68,7 +68,7 @@ Included source **examples** use basic building via `release.bat` files. Note th
 
 SimpleDock is default layout manager.
 
-Current design of docking and split views allows building simple apps but if you need to have multiple split views in few different directions you might need to create your own layout manager. SimpleDock can not handle complex multi-split setups.
+Current design of docking and split views allows building simple apps but if you need to have multiple split views in few different directions you might need to create your own layout manager.
 
 Important point is to have **one** control inside SimpleDock set to dock as **Fill**. Controls that are not set to any docking get placed using SetPos() function. So you can have Panel set to dock at the Top and then have another dock to arrange controls inside that Panel or have controls placed using SetPos() at fixed positions.
 
