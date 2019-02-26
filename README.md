@@ -70,6 +70,16 @@ SimpleDock is default layout manager.
 
 Current design of docking and split views allows building simple apps but if you need to have multiple split views in few different directions you might need to create your own layout manager. SimpleDock can not handle complex multi-split setups.
 
+Important point is to have one control set to dock as **Fill**. Controls that are not set to any docking get placed using SetPos() function. So you can have Panel set to dock at the Top and then have another dock to arrange controls inside that Panel or have controls placed using SetPos() at fixed positions.
+
+![Example layout with two toolbars and status bar](dock_topbottom.png)
+
+This is basic layout. Instead of toolbars and status bar you can have Panel or anny other control that can resize.
+
+![Example layout with two toolbars and navigation on the left](dock_topleft.png)
+
+This is layout with extra control(s) on the left. Left side is usually treeview or listview.
+
 At some point **winc** may get more sophisticated layout manager.
 
 ## Dialog Screens
