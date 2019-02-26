@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Tad Vizbaras. All Rights Reserved.
+ * Copyright (C) 2019 The Winc Authors. All Rights Reserved.
  */
 
 package winc

@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2019 Tad Vizbaras. All Rights Reserved.
- * Copyright 2010-2012 The W32 Authors. All Rights Reserved.
+ * Copyright (C) 2019 The Winc Authors. All Rights Reserved.
+ * Copyright (C) 2010-2012 The W32 Authors. All Rights Reserved.
  */
 
 package w32
