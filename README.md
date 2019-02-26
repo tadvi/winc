@@ -74,11 +74,13 @@ Important point is to have **one** control inside SimpleDock set to dock as **Fi
 
 ![Example layout with two toolbars and status bar](dock_topbottom.png)
 
-This is basic layout. Instead of toolbars and status bar you can have Panel or any other control that can resize.
+This is basic layout. Instead of toolbars and status bar you can have Panel or any other control that can resize. Panel can have its own internal Dock that will arrange other controls inside of it.
 
 ![Example layout with two toolbars and navigation on the left](dock_topleft.png)
 
 This is layout with extra control(s) on the left. Left side is usually treeview or listview.
+
+The rule is simple: you either dock controls using SimpleDock OR use SetPos() to set them at fixed positions. That's it.
 
 At some point **winc** may get more sophisticated layout manager.
 
