@@ -74,7 +74,7 @@ Important point is to have one control set to dock as **Fill**. Controls that ar
 
 ![Example layout with two toolbars and status bar](dock_topbottom.png)
 
-This is basic layout. Instead of toolbars and status bar you can have Panel or anny other control that can resize.
+This is basic layout. Instead of toolbars and status bar you can have Panel or any other control that can resize.
 
 ![Example layout with two toolbars and navigation on the left](dock_topleft.png)
 
