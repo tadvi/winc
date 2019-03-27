@@ -32,6 +32,7 @@ type ListItemSetter interface {
 
 // StringListItem is helper for basic string lists.
 type StringListItem struct {
+	ID    int
 	Data  string
 	Check bool
 }
