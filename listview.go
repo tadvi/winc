@@ -353,10 +353,12 @@ func (lv *ListView) SelectedItem() ListItem {
 	return nil
 }
 
-func (lv *ListView) SetSelectedItem(item ListItem) {
+func (lv *ListView) SetSelectedItem(item ListItem) bool {
 	if i := lv.findIndexByItem(item); i > -1 {
 		lv.SetSelectedIndex(i)
+		return true
 	}
+	return false
 }
 
 // mask is used to set the LVITEM.Mask for ListView.GetItem which indicates which attributes you'd like to receive
