@@ -353,6 +353,12 @@ func (lv *ListView) SelectedItem() ListItem {
 	return nil
 }
 
+func (lv *ListView) SetSelectedItem(item ListItem) {
+	if i := lv.findIndexByItem(item); i > -1 {
+		lv.SetSelectedIndex(i)
+	}
+}
+
 // mask is used to set the LVITEM.Mask for ListView.GetItem which indicates which attributes you'd like to receive
 // of LVITEM.
 func (lv *ListView) SelectedItems() []ListItem {
