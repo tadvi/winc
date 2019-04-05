@@ -506,6 +506,8 @@ func (lv *ListView) WndProc(msg uint32, wparam, lparam uintptr) uintptr {
 				}
 			}
 			lv.onKeyDown.Fire(NewEvent(lv, nmkey.WVKey))
+			key := nmkey.WVKey
+			w32.SendMessage(lv.Parent().Handle(), w32.WM_KEYDOWN, uintptr(key), 0)
 
 		case w32.LVN_ITEMCHANGING:
 			// This event also fires when listview has changed via code.
