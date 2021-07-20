@@ -20,6 +20,35 @@ type Form struct {
 	layoutMng LayoutManager
 }
 
+func NewCustomForm(parent Controller, exStyle int) *Form {
+	fm := new(Form)
+
+	RegClassOnlyOnce("winc_Form")
+
+	fm.isForm = true
+
+	if exStyle == 0 {
+		exStyle = w32.WS_EX_CONTROLPARENT | w32.WS_EX_APPWINDOW
+	}
+
+	fm.hwnd = CreateWindow("winc_Form", parent, uint(exStyle), w32.WS_OVERLAPPEDWINDOW)
+	fm.parent = parent
+
+	// this might fail if icon resource is not embedded in the binary
+	if ico, err := NewIconFromResource(GetAppInstance(), uint16(AppIconID)); err == nil {
+		fm.SetIcon(0, ico)
+	}
+
+	// This forces display of focus rectangles, as soon as the user starts to type.
+	w32.SendMessage(fm.hwnd, w32.WM_CHANGEUISTATE, w32.UIS_INITIALIZE, 0)
+
+	RegMsgHandler(fm)
+
+	fm.SetFont(DefaultFont)
+	fm.SetText("Form")
+	return fm
+}
+
 func NewForm(parent Controller) *Form {
 	fm := new(Form)
 
