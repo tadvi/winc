@@ -7,6 +7,7 @@ package winc
 
 import (
 	"github.com/tadvi/winc/w32"
+	"unsafe"
 )
 
 type LayoutManager interface {
@@ -17,7 +18,9 @@ type LayoutManager interface {
 type Form struct {
 	ControlBase
 
-	layoutMng LayoutManager
+	layoutMng           LayoutManager
+	isFullscreen        bool
+	previousWindowStyle int
 }
 
 func NewCustomForm(parent Controller, exStyle int) *Form {
@@ -106,6 +109,31 @@ func (fm *Form) Center() {
 	}
 }
 
+func (fm *Form) Fullscreen() {
+	if fm.isFullscreen {
+		return
+	}
+
+	fm.previousWindowStyle = int(w32.GetWindowLongPtr(fm.hwnd, w32.GWL_STYLE))
+	monitor := w32.MonitorFromWindow(fm.hwnd, w32.MONITOR_DEFAULTTOPRIMARY)
+	var monitorInfo w32.MONITORINFO
+	monitorInfo.CbSize = uint32(unsafe.Sizeof(monitorInfo))
+	if !w32.GetMonitorInfo(monitor, &monitorInfo) {
+		return
+	}
+	var windowPlacement w32.WINDOWPLACEMENT
+	if !w32.GetWindowPlacement(fm.hwnd, &windowPlacement) {
+		return
+	}
+	w32.SetWindowLong(fm.hwnd, w32.GWL_STYLE, uint32(fm.previousWindowStyle & ^w32.WS_OVERLAPPEDWINDOW))
+	w32.SetWindowPos(fm.hwnd, w32.HWND_TOP,
+		int(monitorInfo.RcMonitor.Left),
+		int(monitorInfo.RcMonitor.Top),
+		int(monitorInfo.RcMonitor.Right-monitorInfo.RcMonitor.Left),
+		int(monitorInfo.RcMonitor.Bottom-monitorInfo.RcMonitor.Top),
+		w32.SWP_NOOWNERZORDER|w32.SWP_FRAMECHANGED)
+}
+
 // IconType: 1 - ICON_BIG; 0 - ICON_SMALL
 func (fm *Form) SetIcon(iconType int, icon *Icon) {
 	if iconType > 1 {
@@ -126,7 +154,7 @@ func (fm *Form) EnableSizable(b bool) {
 	ToggleStyle(fm.hwnd, b, w32.WS_THICKFRAME)
 }
 
-func (fm *Form) EnableDragMove(b bool) {
+func (fm *Form) EnableDragMove(_ bool) {
 	//fm.isDragMove = b
 }
 
