@@ -941,7 +941,7 @@ func BeginPaint(hwnd HWND, paint *PAINTSTRUCT) HDC {
 }
 
 func EndPaint(hwnd HWND, paint *PAINTSTRUCT) {
-	procBeginPaint.Call(
+	procEndPaint.Call(
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(paint)))
 }
