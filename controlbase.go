@@ -8,6 +8,7 @@ package winc
 import (
 	"fmt"
 	"syscall"
+	"unsafe"
 
 	"github.com/tadvi/winc/w32"
 )
@@ -118,6 +119,18 @@ func (cba *ControlBase) Text() string {
 func (cba *ControlBase) Close() {
 	UnRegMsgHandler(cba.hwnd)
 	w32.DestroyWindow(cba.hwnd)
+}
+
+func (cba *ControlBase) SetTranslucentBackground() {
+	var accent = w32.ACCENT_POLICY{
+		AccentState: w32.ACCENT_ENABLE_BLURBEHIND,
+	}
+	var data w32.WINDOWCOMPOSITIONATTRIBDATA
+	data.Attrib = w32.WCA_ACCENT_POLICY
+	data.PvData = unsafe.Pointer(&accent)
+	data.CbData = unsafe.Sizeof(accent)
+
+	w32.SetWindowCompositionAttribute(cba.hwnd, &data)
 }
 
 func (cba *ControlBase) SetSize(width, height int) {
