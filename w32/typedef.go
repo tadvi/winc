@@ -218,6 +218,7 @@ type (
 	ULONG_PTR       = uintptr
 	SIZE_T          = ULONG_PTR
 	WPARAM          = uintptr
+	UINT            = uint
 )
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd162805.aspx

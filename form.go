@@ -18,9 +18,12 @@ type LayoutManager interface {
 type Form struct {
 	ControlBase
 
-	layoutMng           LayoutManager
-	isFullscreen        bool
-	previousWindowStyle int
+	layoutMng LayoutManager
+
+	// Fulscreen / Unfullscreen
+	isFullscreen            bool
+	previousWindowStyle     uint32
+	previousWindowPlacement w32.WINDOWPLACEMENT
 }
 
 func NewCustomForm(parent Controller, exStyle int) *Form {
@@ -114,24 +117,35 @@ func (fm *Form) Fullscreen() {
 		return
 	}
 
-	fm.previousWindowStyle = int(w32.GetWindowLongPtr(fm.hwnd, w32.GWL_STYLE))
+	fm.previousWindowStyle = uint32(w32.GetWindowLongPtr(fm.hwnd, w32.GWL_STYLE))
 	monitor := w32.MonitorFromWindow(fm.hwnd, w32.MONITOR_DEFAULTTOPRIMARY)
 	var monitorInfo w32.MONITORINFO
 	monitorInfo.CbSize = uint32(unsafe.Sizeof(monitorInfo))
 	if !w32.GetMonitorInfo(monitor, &monitorInfo) {
 		return
 	}
-	var windowPlacement w32.WINDOWPLACEMENT
-	if !w32.GetWindowPlacement(fm.hwnd, &windowPlacement) {
+	if !w32.GetWindowPlacement(fm.hwnd, &fm.previousWindowPlacement) {
 		return
 	}
-	w32.SetWindowLong(fm.hwnd, w32.GWL_STYLE, uint32(fm.previousWindowStyle & ^w32.WS_OVERLAPPEDWINDOW))
+	w32.SetWindowLong(fm.hwnd, w32.GWL_STYLE, fm.previousWindowStyle & ^uint32(w32.WS_OVERLAPPEDWINDOW))
 	w32.SetWindowPos(fm.hwnd, w32.HWND_TOP,
 		int(monitorInfo.RcMonitor.Left),
 		int(monitorInfo.RcMonitor.Top),
 		int(monitorInfo.RcMonitor.Right-monitorInfo.RcMonitor.Left),
 		int(monitorInfo.RcMonitor.Bottom-monitorInfo.RcMonitor.Top),
 		w32.SWP_NOOWNERZORDER|w32.SWP_FRAMECHANGED)
+	fm.isFullscreen = true
+}
+
+func (fm *Form) UnFullscreen() {
+	if !fm.isFullscreen {
+		return
+	}
+	w32.SetWindowLong(fm.hwnd, w32.GWL_STYLE, fm.previousWindowStyle)
+	w32.SetWindowPlacement(fm.hwnd, &fm.previousWindowPlacement)
+	w32.SetWindowPos(fm.hwnd, 0, 0, 0, 0, 0,
+		w32.SWP_NOMOVE|w32.SWP_NOSIZE|w32.SWP_NOZORDER|w32.SWP_NOOWNERZORDER|w32.SWP_FRAMECHANGED)
+	fm.isFullscreen = false
 }
 
 // IconType: 1 - ICON_BIG; 0 - ICON_SMALL
