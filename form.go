@@ -26,7 +26,7 @@ type Form struct {
 	previousWindowPlacement w32.WINDOWPLACEMENT
 }
 
-func NewCustomForm(parent Controller, exStyle int) *Form {
+func NewCustomForm(parent Controller, exStyle int, dwStyle uint) *Form {
 	fm := new(Form)
 
 	RegClassOnlyOnce("winc_Form")
@@ -37,7 +37,11 @@ func NewCustomForm(parent Controller, exStyle int) *Form {
 		exStyle = w32.WS_EX_CONTROLPARENT | w32.WS_EX_APPWINDOW
 	}
 
-	fm.hwnd = CreateWindow("winc_Form", parent, uint(exStyle), w32.WS_OVERLAPPEDWINDOW)
+	if dwStyle == 0 {
+		dwStyle = w32.WS_OVERLAPPEDWINDOW
+	}
+
+	fm.hwnd = CreateWindow("winc_Form", parent, uint(exStyle), dwStyle)
 	fm.parent = parent
 
 	// this might fail if icon resource is not embedded in the binary
