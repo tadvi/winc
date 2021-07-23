@@ -156,10 +156,7 @@ func (cba *ControlBase) Height() int {
 }
 
 func (cba *ControlBase) SetPos(x, y int) {
-	currentMonitor := w32.MonitorFromWindow(cba.hwnd, w32.MONITOR_DEFAULTTONEAREST)
-	var info w32.MONITORINFO
-	info.CbSize = uint32(unsafe.Sizeof(info))
-	w32.GetMonitorInfo(currentMonitor, &info)
+	info := getMonitorInfo(cba.hwnd)
 	workRect := info.RcWork
 
 	w32.SetWindowPos(cba.hwnd, w32.HWND_TOP, int(workRect.Left)+x, int(workRect.Top)+y, 0, 0, w32.SWP_NOSIZE)

@@ -97,6 +97,20 @@ func RegisterClass(className string, wndproc uintptr) {
 	}
 }
 
+func getMonitorInfo(hwnd w32.HWND) *w32.MONITORINFO {
+	currentMonitor := w32.MonitorFromWindow(hwnd, w32.MONITOR_DEFAULTTONEAREST)
+	var info w32.MONITORINFO
+	info.CbSize = uint32(unsafe.Sizeof(info))
+	w32.GetMonitorInfo(currentMonitor, &info)
+	return &info
+}
+func getWindowInfo(hwnd w32.HWND) *w32.WINDOWINFO {
+	var info w32.WINDOWINFO
+	info.CbSize = uint32(unsafe.Sizeof(info))
+	w32.GetWindowInfo(hwnd, &info)
+	return &info
+}
+
 func RegClassOnlyOnce(className string) {
 	isExists := false
 	for _, class := range gRegisteredClasses {

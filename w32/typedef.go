@@ -6,6 +6,7 @@
 package w32
 
 import (
+	"fmt"
 	"unsafe"
 )
 
@@ -181,6 +182,7 @@ type (
 	BOOL            = int32
 	COLORREF        = uint32
 	DWM_FRAME_COUNT = uint64
+	WORD            = uint16
 	DWORD           = uint32
 	HACCEL          = HANDLE
 	HANDLE          = uintptr
@@ -229,6 +231,10 @@ type POINT struct {
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd162897.aspx
 type RECT struct {
 	Left, Top, Right, Bottom int32
+}
+
+func (r *RECT) String() string {
+	return fmt.Sprintf("RECT (%p): Left: %d, Top: %d, Right: %d, Bottom: %d", r, r.Left, r.Top, r.Right, r.Bottom)
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms633577.aspx
@@ -901,6 +907,35 @@ type MONITORINFO struct {
 	RcMonitor RECT
 	RcWork    RECT
 	DwFlags   uint32
+}
+
+type WINDOWINFO struct {
+	CbSize          DWORD
+	RcWindow        RECT
+	RcClient        RECT
+	DwStyle         DWORD
+	DwExStyle       DWORD
+	DwWindowStatus  DWORD
+	CxWindowBorders UINT
+	CyWindowBorders UINT
+	AtomWindowType  ATOM
+	WCreatorVersion WORD
+}
+
+func (w *WINDOWINFO) isStyle(style DWORD) bool {
+	return w.DwStyle&style == style
+}
+
+func (w *WINDOWINFO) IsPopup() bool {
+	return w.isStyle(WS_POPUP)
+}
+
+func (m *MONITORINFO) Dump() {
+	fmt.Printf("MONITORINFO (%p)\n", m)
+	fmt.Printf("  CbSize   : %d\n", m.CbSize)
+	fmt.Printf("  RcMonitor: %s\n", &m.RcMonitor)
+	fmt.Printf("  RcWork   : %s\n", &m.RcWork)
+	fmt.Printf("  DwFlags  : %d\n", m.DwFlags)
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd145066.aspx

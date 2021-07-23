@@ -37,6 +37,7 @@ var (
 	procGetWindowTextLength           = moduser32.NewProc("GetWindowTextLengthW")
 	procGetWindowText                 = moduser32.NewProc("GetWindowTextW")
 	procGetWindowRect                 = moduser32.NewProc("GetWindowRect")
+	procGetWindowInfo                 = moduser32.NewProc("GetWindowInfo")
 	procSetWindowCompositionAttribute = moduser32.NewProc("SetWindowCompositionAttribute")
 	procMoveWindow                    = moduser32.NewProc("MoveWindow")
 	procScreenToClient                = moduser32.NewProc("ScreenToClient")
@@ -340,6 +341,14 @@ func GetWindowTextLength(hwnd HWND) int {
 	return int(ret)
 }
 
+func GetWindowInfo(hwnd HWND, info *WINDOWINFO) int {
+	ret, _, _ := procGetWindowInfo.Call(
+		hwnd,
+		uintptr(unsafe.Pointer(info)),
+	)
+	return int(ret)
+}
+
 func GetWindowText(hwnd HWND) string {
 	textLen := GetWindowTextLength(hwnd) + 1
 
@@ -355,7 +364,7 @@ func GetWindowText(hwnd HWND) string {
 func GetWindowRect(hwnd HWND) *RECT {
 	var rect RECT
 	procGetWindowRect.Call(
-		uintptr(hwnd),
+		hwnd,
 		uintptr(unsafe.Pointer(&rect)))
 
 	return &rect

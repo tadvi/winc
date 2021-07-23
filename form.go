@@ -108,12 +108,25 @@ func (fm *Form) NewMenu() *Menu {
 
 // Public methods
 func (fm *Form) Center() {
-	sWidth := w32.GetSystemMetrics(w32.SM_CXFULLSCREEN)
-	sHeight := w32.GetSystemMetrics(w32.SM_CYFULLSCREEN)
-	if sWidth != 0 && sHeight != 0 {
-		w, h := fm.Size()
-		fm.SetPos((sWidth/2)-(w/2), (sHeight/2)-(h/2))
+
+	windowInfo := getWindowInfo(fm.hwnd)
+	frameless := windowInfo.IsPopup()
+
+	info := getMonitorInfo(fm.hwnd)
+	workRect := info.RcWork
+	screenMiddleW := workRect.Left + (workRect.Right-workRect.Left)/2
+	screenMiddleH := workRect.Top + (workRect.Bottom-workRect.Top)/2
+	var winRect *w32.RECT
+	if !frameless {
+		winRect = w32.GetWindowRect(fm.hwnd)
+	} else {
+		winRect = w32.GetClientRect(fm.hwnd)
 	}
+	winWidth := winRect.Right - winRect.Left
+	winHeight := winRect.Bottom - winRect.Top
+	windowX := screenMiddleW - (winWidth / 2)
+	windowY := screenMiddleH - (winHeight / 2)
+	w32.SetWindowPos(fm.hwnd, w32.HWND_TOP, int(windowX), int(windowY), int(winWidth), int(winHeight), w32.SWP_NOSIZE)
 }
 
 func (fm *Form) Fullscreen() {
