@@ -123,6 +123,18 @@ func (fm *Form) DisableIcon() {
 	)
 }
 
+func (fm *Form) Maximise() {
+	w32.ShowWindow(fm.hwnd, w32.SW_MAXIMIZE)
+}
+
+func (fm *Form) Minimise() {
+	w32.ShowWindow(fm.hwnd, w32.SW_MINIMIZE)
+}
+
+func (fm *Form) Restore() {
+	w32.ShowWindow(fm.hwnd, w32.SW_RESTORE)
+}
+
 // Public methods
 func (fm *Form) Center() {
 
