@@ -106,6 +106,23 @@ func (fm *Form) NewMenu() *Menu {
 	return m
 }
 
+func (fm *Form) DisableIcon() {
+	windowInfo := getWindowInfo(fm.hwnd)
+	frameless := windowInfo.IsPopup()
+	if frameless {
+		return
+	}
+	exStyle := w32.GetWindowLong(fm.hwnd, w32.GWL_EXSTYLE)
+	w32.SetWindowLong(fm.hwnd, w32.GWL_EXSTYLE, uint32(exStyle|w32.WS_EX_DLGMODALFRAME))
+	w32.SetWindowPos(fm.hwnd, 0, 0, 0, 0, 0,
+		uint(
+			w32.SWP_FRAMECHANGED|
+				w32.SWP_NOMOVE|
+				w32.SWP_NOSIZE|
+				w32.SWP_NOZORDER),
+	)
+}
+
 // Public methods
 func (fm *Form) Center() {
 
