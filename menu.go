@@ -151,6 +151,16 @@ func (mi *MenuItem) AddItemWithBitmap(text string, shortcut Shortcut, image *Bit
 	return addMenuItem(mi.hSubMenu, 0, text, shortcut, image, false)
 }
 
+// AddSubMenu adds a submenu.
+func (mi *MenuItem) AddSubMenu(text string) *MenuItem {
+	hSubMenu := w32.CreatePopupMenu()
+	if hSubMenu == 0 {
+		panic("failed CreatePopupMenu")
+	}
+	fmt.Printf("Created Submenu %p\n", hSubMenu)
+	return addMenuItem(mi.hSubMenu, hSubMenu, text, Shortcut{}, nil, false)
+}
+
 // AddItem to the menu, set text to "-" for separators.
 func addMenuItem(hMenu, hSubMenu w32.HMENU, text string, shortcut Shortcut, image *Bitmap, checkable bool) *MenuItem {
 	item := &MenuItem{
