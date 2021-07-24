@@ -268,6 +268,15 @@ type MSG struct {
 	Pt      POINT
 }
 
+// https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-minmaxinfo
+type MINMAXINFO struct {
+	PtReserved     POINT
+	PtMaxSize      POINT
+	PtMaxPosition  POINT
+	PtMinTrackSize POINT
+	PtMaxTrackSize POINT
+}
+
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd145037.aspx
 type LOGFONT struct {
 	Height         int32
@@ -921,6 +930,15 @@ type WINDOWINFO struct {
 	AtomWindowType  ATOM
 	WCreatorVersion WORD
 }
+
+type MONITOR_DPI_TYPE int32
+
+const (
+	MDT_EFFECTIVE_DPI MONITOR_DPI_TYPE = 0
+	MDT_ANGULAR_DPI   MONITOR_DPI_TYPE = 1
+	MDT_RAW_DPI       MONITOR_DPI_TYPE = 2
+	MDT_DEFAULT       MONITOR_DPI_TYPE = 0
+)
 
 func (w *WINDOWINFO) isStyle(style DWORD) bool {
 	return w.DwStyle&style == style

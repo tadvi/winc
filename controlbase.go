@@ -21,6 +21,9 @@ type ControlBase struct {
 
 	isForm bool
 
+	minWidth, minHeight int
+	maxWidth, maxHeight int
+
 	// General events
 	onCreate EventManager
 	onClose  EventManager
@@ -90,6 +93,13 @@ func (cba *ControlBase) SetHandle(hwnd w32.HWND) {
 	cba.hwnd = hwnd
 }
 
+func (cba *ControlBase) GetWindowDPI() (w32.UINT, w32.UINT) {
+	monitor := w32.MonitorFromWindow(cba.hwnd, w32.MONITOR_DEFAULTTOPRIMARY)
+	var dpiX, dpiY w32.UINT
+	w32.GetDPIForMonitor(monitor, w32.MDT_EFFECTIVE_DPI, &dpiX, &dpiY)
+	return dpiX, dpiY
+}
+
 func (cba *ControlBase) SetAndClearStyleBits(set, clear uint32) error {
 	style := uint32(w32.GetWindowLong(cba.hwnd, w32.GWL_STYLE))
 	if style == 0 {
@@ -133,9 +143,79 @@ func (cba *ControlBase) SetTranslucentBackground() {
 	w32.SetWindowCompositionAttribute(cba.hwnd, &data)
 }
 
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func (cba *ControlBase) clampSize(width, height int) (int, int) {
+	if cba.minWidth != 0 {
+		width = max(width, cba.minWidth)
+	}
+	if cba.maxWidth != 0 {
+		width = min(width, cba.maxWidth)
+	}
+	if cba.minHeight != 0 {
+		height = max(height, cba.minHeight)
+	}
+	if cba.maxHeight != 0 {
+		height = min(height, cba.maxHeight)
+	}
+	return width, height
+}
+
 func (cba *ControlBase) SetSize(width, height int) {
 	x, y := cba.Pos()
+	width, height = cba.clampSize(width, height)
 	w32.MoveWindow(cba.hwnd, x, y, width, height, true)
+}
+
+func (cba *ControlBase) SetMinSize(width, height int) {
+	cba.minWidth = width
+	cba.minHeight = height
+
+	// Ensure we set max if min > max
+	if cba.maxWidth > 0 {
+		cba.maxWidth = max(cba.minWidth, cba.maxWidth)
+	}
+	if cba.maxHeight > 0 {
+		cba.maxHeight = max(cba.minHeight, cba.maxHeight)
+	}
+
+	x, y := cba.Pos()
+	currentWidth, currentHeight := cba.Size()
+	clampedWidth, clampedHeight := cba.clampSize(currentWidth, currentHeight)
+	if clampedWidth != currentWidth || clampedHeight != currentHeight {
+		w32.MoveWindow(cba.hwnd, x, y, clampedWidth, clampedHeight, true)
+	}
+}
+func (cba *ControlBase) SetMaxSize(width, height int) {
+	cba.maxWidth = width
+	cba.maxHeight = height
+
+	// Ensure we set min if max > min
+	if cba.minWidth > 0 {
+		cba.minWidth = min(cba.maxWidth, cba.minWidth)
+	}
+	if cba.maxHeight > 0 {
+		cba.minHeight = min(cba.maxHeight, cba.minHeight)
+	}
+
+	x, y := cba.Pos()
+	currentWidth, currentHeight := cba.Size()
+	clampedWidth, clampedHeight := cba.clampSize(currentWidth, currentHeight)
+	if clampedWidth != currentWidth || clampedHeight != currentHeight {
+		w32.MoveWindow(cba.hwnd, x, y, clampedWidth, clampedHeight, true)
+	}
 }
 
 func (cba *ControlBase) Size() (width, height int) {

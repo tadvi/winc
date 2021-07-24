@@ -227,6 +227,7 @@ func (fm *Form) EnableTopMost(b bool) {
 }
 
 func (fm *Form) WndProc(msg uint32, wparam, lparam uintptr) uintptr {
+
 	switch msg {
 	case w32.WM_COMMAND:
 		if lparam == 0 && w32.HIWORD(uint32(wparam)) == 0 {
@@ -261,6 +262,27 @@ func (fm *Form) WndProc(msg uint32, wparam, lparam uintptr) uintptr {
 		if fm.layoutMng != nil {
 			fm.layoutMng.Update()
 		}
+	case w32.WM_GETMINMAXINFO:
+		if fm.minWidth != 0 || fm.maxWidth != 0 || fm.minHeight != 0 || fm.maxHeight != 0 {
+			dpix, dpiy := fm.GetWindowDPI()
+
+			DPIScaleX := dpix / 96.0
+			DPIScaleY := dpiy / 96.0
+
+			mmi := (*w32.MINMAXINFO)(unsafe.Pointer(lparam))
+			if fm.minWidth > 0 && fm.minHeight > 0 {
+				mmi.PtMinTrackSize.X = int32(fm.minWidth * int(DPIScaleX))
+				mmi.PtMinTrackSize.Y = int32(fm.minHeight * int(DPIScaleY))
+			}
+			if fm.maxWidth > 0 && fm.maxHeight > 0 {
+				mmi.PtMaxSize.X = int32(fm.maxWidth * int(DPIScaleX))
+				mmi.PtMaxSize.Y = int32(fm.maxHeight * int(DPIScaleY))
+				mmi.PtMaxTrackSize.X = int32(fm.maxWidth * int(DPIScaleX))
+				mmi.PtMaxTrackSize.Y = int32(fm.maxHeight * int(DPIScaleY))
+			}
+			return 0
+		}
 	}
+
 	return w32.DefWindowProc(fm.hwnd, msg, wparam, lparam)
 }
