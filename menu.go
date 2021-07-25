@@ -17,6 +17,8 @@ var (
 	actionsByID            = make(map[uint16]*MenuItem)
 	shortcut2Action        = make(map[Shortcut]*MenuItem)
 	menuItems              = make(map[w32.HMENU][]*MenuItem)
+	radioGroups            = make(map[*MenuItem]*RadioGroup)
+	initialised     bool
 )
 
 var NoShortcut = Shortcut{}
@@ -40,10 +42,17 @@ type MenuItem struct {
 
 	checkable bool
 	checked   bool
+	isRadio   bool
 
 	id uint16
 
 	onClick EventManager
+}
+
+type RadioGroup struct {
+	startID uint16
+	endID   uint16
+	hwnd    w32.HWND
 }
 
 func NewContextMenu() *MenuItem {
@@ -114,6 +123,8 @@ func initMenuItemInfoFromAction(mii *w32.MENUITEMINFO, a *MenuItem) {
 
 // Show menu on the main window.
 func (m *Menu) Show() {
+	initialised = true
+	updateRadioGroups()
 	if !w32.DrawMenuBar(m.hwnd) {
 		panic("DrawMenuBar failed")
 	}
@@ -126,6 +137,52 @@ func (m *Menu) AddSubMenu(text string) *MenuItem {
 		panic("failed CreateMenu")
 	}
 	return addMenuItem(m.hMenu, hSubMenu, text, Shortcut{}, nil, false)
+}
+
+// This method will iterate through the menu items, group radio items together, build a
+// quick access map and set the initial items
+func updateRadioGroups() {
+
+	if !initialised {
+		return
+	}
+
+	radioItemsChecked := []*MenuItem{}
+	radioGroups = make(map[*MenuItem]*RadioGroup)
+	var currentRadioGroupMembers []*MenuItem
+	// Iterate the menus
+	for _, menu := range menuItems {
+		for _, menuItem := range menu {
+			if menuItem.isRadio {
+				currentRadioGroupMembers = append(currentRadioGroupMembers, menuItem)
+				if menuItem.checked {
+					radioItemsChecked = append(radioItemsChecked, menuItem)
+				}
+				continue
+			}
+			if len(currentRadioGroupMembers) > 0 {
+				startID := currentRadioGroupMembers[0].id
+				endID := currentRadioGroupMembers[len(currentRadioGroupMembers)-1].id
+				radioGroup := &RadioGroup{
+					startID: startID,
+					endID:   endID,
+					hwnd:    menuItem.hMenu,
+				}
+				// Save the group to each member iin the radiomap
+				for _, member := range currentRadioGroupMembers {
+					radioGroups[member] = radioGroup
+				}
+				currentRadioGroupMembers = []*MenuItem{}
+			}
+		}
+	}
+
+	// Enable the checked items
+	for _, item := range radioItemsChecked {
+		radioGroup := radioGroups[item]
+		w32.SelectRadioMenuItem(item.id, radioGroup.startID, radioGroup.endID, radioGroup.hwnd)
+	}
+
 }
 
 func (mi *MenuItem) OnClick() *EventManager {
@@ -144,6 +201,13 @@ func (mi *MenuItem) AddItem(text string, shortcut Shortcut) *MenuItem {
 // AddItemCheckable adds plain menu item that can have a checkmark.
 func (mi *MenuItem) AddItemCheckable(text string, shortcut Shortcut) *MenuItem {
 	return addMenuItem(mi.hSubMenu, 0, text, shortcut, nil, true)
+}
+
+// AddItemRadio adds plain menu item that can have a checkmark and is part of a radio group.
+func (mi *MenuItem) AddItemRadio(text string, shortcut Shortcut) *MenuItem {
+	menuItem := addMenuItem(mi.hSubMenu, 0, text, shortcut, nil, true)
+	menuItem.isRadio = true
+	return menuItem
 }
 
 // AddItemWithBitmap adds menu item with shortcut and bitmap.
@@ -172,6 +236,7 @@ func addMenuItem(hMenu, hSubMenu w32.HMENU, text string, shortcut Shortcut, imag
 		enabled:   true,
 		id:        nextMenuItemID,
 		checkable: checkable,
+		isRadio:   false,
 		//visible:  true,
 	}
 	nextMenuItemID++
@@ -211,6 +276,9 @@ func (mi *MenuItem) update() {
 		panic("SetMenuItemInfo failed")
 	}
 	//mi.menu.MenuItemChange(mi)
+	if mi.isRadio {
+		updateRadioGroups()
+	}
 }
 
 func (mi *MenuItem) IsSeparator() bool { return mi.text == "-" }

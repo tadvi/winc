@@ -81,8 +81,9 @@ var (
 	procDrawIcon          = moduser32.NewProc("DrawIcon")
 	procCreateMenu        = moduser32.NewProc("CreateMenu")
 	//procSetMenu                  = moduser32.NewProc("SetMenu")
-	procDestroyMenu     = moduser32.NewProc("DestroyMenu")
-	procCreatePopupMenu = moduser32.NewProc("CreatePopupMenu")
+	procDestroyMenu        = moduser32.NewProc("DestroyMenu")
+	procCreatePopupMenu    = moduser32.NewProc("CreatePopupMenu")
+	procCheckMenuRadioItem = moduser32.NewProc("CheckMenuRadioItem")
 	//procDrawMenuBar     = moduser32.NewProc("DrawMenuBar")
 	//procInsertMenuItem                = moduser32.NewProc("InsertMenuItemW") // FIXIT:
 
@@ -733,6 +734,18 @@ func SetMenu(hWnd HWND, hMenu HMENU) bool {
 		0)
 
 	return ret != 0
+}
+
+// https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-checkmenuradioitem
+func SelectRadioMenuItem(menuID uint16, startID uint16, endID uint16, hwnd HWND) bool {
+	ret, _, _ := procCheckMenuRadioItem.Call(
+		hwnd,
+		uintptr(startID),
+		uintptr(endID),
+		uintptr(menuID),
+		MF_BYCOMMAND)
+	return ret != 0
+
 }
 
 func CreatePopupMenu() HMENU {
