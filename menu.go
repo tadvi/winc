@@ -50,8 +50,7 @@ type MenuItem struct {
 }
 
 type RadioGroup struct {
-	startID uint16
-	endID   uint16
+	members []*MenuItem
 	hwnd    w32.HWND
 }
 
@@ -161,11 +160,8 @@ func updateRadioGroups() {
 				continue
 			}
 			if len(currentRadioGroupMembers) > 0 {
-				startID := currentRadioGroupMembers[0].id
-				endID := currentRadioGroupMembers[len(currentRadioGroupMembers)-1].id
 				radioGroup := &RadioGroup{
-					startID: startID,
-					endID:   endID,
+					members: currentRadioGroupMembers,
 					hwnd:    menuItem.hMenu,
 				}
 				// Save the group to each member iin the radiomap
@@ -180,7 +176,9 @@ func updateRadioGroups() {
 	// Enable the checked items
 	for _, item := range radioItemsChecked {
 		radioGroup := radioGroups[item]
-		w32.SelectRadioMenuItem(item.id, radioGroup.startID, radioGroup.endID, radioGroup.hwnd)
+		startID := radioGroup.members[0].id
+		endID := radioGroup.members[len(radioGroup.members)-1].id
+		w32.SelectRadioMenuItem(item.id, startID, endID, radioGroup.hwnd)
 	}
 
 }
@@ -289,8 +287,19 @@ func (mi *MenuItem) SetEnabled(b bool) { mi.enabled = b; mi.update() }
 func (mi *MenuItem) Checkable() bool     { return mi.checkable }
 func (mi *MenuItem) SetCheckable(b bool) { mi.checkable = b; mi.update() }
 
-func (mi *MenuItem) Checked() bool     { return mi.checked }
-func (mi *MenuItem) SetChecked(b bool) { mi.checked = b; mi.update() }
+func (mi *MenuItem) Checked() bool { return mi.checked }
+func (mi *MenuItem) SetChecked(b bool) {
+	if mi.isRadio {
+		radioGroup := radioGroups[mi]
+		if radioGroup != nil {
+			for _, member := range radioGroup.members {
+				member.checked = false
+			}
+		}
+	}
+	mi.checked = b
+	mi.update()
+}
 
 func (mi *MenuItem) Text() string     { return mi.text }
 func (mi *MenuItem) SetText(s string) { mi.text = s; mi.update() }
