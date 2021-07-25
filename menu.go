@@ -221,7 +221,6 @@ func (mi *MenuItem) AddSubMenu(text string) *MenuItem {
 	if hSubMenu == 0 {
 		panic("failed CreatePopupMenu")
 	}
-	fmt.Printf("Created Submenu %p\n", hSubMenu)
 	return addMenuItem(mi.hSubMenu, hSubMenu, text, Shortcut{}, nil, false)
 }
 
