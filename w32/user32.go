@@ -7,6 +7,7 @@ package w32
 
 import (
 	"fmt"
+	"runtime"
 	"syscall"
 	"unsafe"
 )
@@ -63,6 +64,7 @@ var (
 	procGetWindowThreadProcessId      = moduser32.NewProc("GetWindowThreadProcessId")
 	procMessageBox                    = moduser32.NewProc("MessageBoxW")
 	procGetSystemMetrics              = moduser32.NewProc("GetSystemMetrics")
+	procPostThreadMessageW            = moduser32.NewProc("PostThreadMessageW")
 	//procSysColorBrush            = moduser32.NewProc("GetSysColorBrush")
 	procCopyRect          = moduser32.NewProc("CopyRect")
 	procEqualRect         = moduser32.NewProc("EqualRect")
@@ -144,7 +146,14 @@ var (
 
 	setScrollInfo, _ = syscall.GetProcAddress(libuser32, "SetScrollInfo")
 	getScrollInfo, _ = syscall.GetProcAddress(libuser32, "GetScrollInfo")
+
+	mainThread HANDLE
 )
+
+func init() {
+	runtime.LockOSThread()
+	mainThread = GetCurrentThreadId()
+}
 
 func GET_X_LPARAM(lp uintptr) int32 {
 	return int32(int16(LOWORD(uint32(lp))))
@@ -196,6 +205,16 @@ func UpdateWindow(hwnd HWND) bool {
 	ret, _, _ := procUpdateWindow.Call(
 		uintptr(hwnd))
 	return ret != 0
+}
+
+func PostThreadMessage(threadID HANDLE, msg int, wp, lp uintptr) {
+	_, _, err := procPostThreadMessageW.Call(threadID, uintptr(msg), wp, lp)
+	println("PostThreadMessage:", err.Error())
+}
+
+func PostMainThreadMessage(msg uint32, wp, lp uintptr) {
+	_, _, err := procPostThreadMessageW.Call(mainThread, uintptr(msg), wp, lp)
+	println("PostThreadMessage:", err.Error())
 }
 
 func CreateWindowEx(exStyle uint, className, windowName *uint16,
