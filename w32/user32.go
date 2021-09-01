@@ -208,13 +208,12 @@ func UpdateWindow(hwnd HWND) bool {
 }
 
 func PostThreadMessage(threadID HANDLE, msg int, wp, lp uintptr) {
-	_, _, err := procPostThreadMessageW.Call(threadID, uintptr(msg), wp, lp)
-	println("PostThreadMessage:", err.Error())
+	procPostThreadMessageW.Call(threadID, uintptr(msg), wp, lp)
 }
 
-func PostMainThreadMessage(msg uint32, wp, lp uintptr) {
-	_, _, err := procPostThreadMessageW.Call(mainThread, uintptr(msg), wp, lp)
-	println("PostThreadMessage:", err.Error())
+func PostMainThreadMessage(msg uint32, wp, lp uintptr) bool {
+	ret, _, _ := procPostThreadMessageW.Call(mainThread, uintptr(msg), wp, lp)
+	return ret != 0
 }
 
 func CreateWindowEx(exStyle uint, className, windowName *uint16,
