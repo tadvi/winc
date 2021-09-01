@@ -151,14 +151,30 @@ func updateRadioGroups() {
 	var currentRadioGroupMembers []*MenuItem
 	// Iterate the menus
 	for _, menu := range menuItems {
-		for _, menuItem := range menu {
+		menuLength := len(menu)
+		for index, menuItem := range menu {
 			if menuItem.isRadio {
 				currentRadioGroupMembers = append(currentRadioGroupMembers, menuItem)
 				if menuItem.checked {
 					radioItemsChecked = append(radioItemsChecked, menuItem)
 				}
+
+				// If end of menu
+				if index == menuLength-1 {
+					radioGroup := &RadioGroup{
+						members: currentRadioGroupMembers,
+						hwnd:    menuItem.hMenu,
+					}
+					// Save the group to each member iin the radiomap
+					for _, member := range currentRadioGroupMembers {
+						radioGroups[member] = radioGroup
+					}
+					currentRadioGroupMembers = []*MenuItem{}
+				}
 				continue
 			}
+
+			// Not a radio item
 			if len(currentRadioGroupMembers) > 0 {
 				radioGroup := &RadioGroup{
 					members: currentRadioGroupMembers,
@@ -272,9 +288,8 @@ func (mi *MenuItem) update() {
 	if !w32.SetMenuItemInfo(mi.hMenu, uint32(indexInObserver(mi)), true, &mii) {
 		panic("SetMenuItemInfo failed")
 	}
-	//mi.menu.MenuItemChange(mi)
 	if mi.isRadio {
-		updateRadioGroups()
+		mi.updateRadioGroup()
 	}
 }
 
@@ -296,6 +311,7 @@ func (mi *MenuItem) SetChecked(b bool) {
 				member.checked = false
 			}
 		}
+
 	}
 	mi.checked = b
 	mi.update()
@@ -309,3 +325,13 @@ func (mi *MenuItem) SetImage(b *Bitmap) { mi.image = b; mi.update() }
 
 func (mi *MenuItem) ToolTip() string     { return mi.toolTip }
 func (mi *MenuItem) SetToolTip(s string) { mi.toolTip = s; mi.update() }
+
+func (mi *MenuItem) updateRadioGroup() {
+	radioGroup := radioGroups[mi]
+	if radioGroup == nil {
+		return
+	}
+	startID := radioGroup.members[0].id
+	endID := radioGroup.members[len(radioGroup.members)-1].id
+	w32.SelectRadioMenuItem(mi.id, startID, endID, radioGroup.hwnd)
+}
