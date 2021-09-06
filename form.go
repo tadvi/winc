@@ -237,8 +237,6 @@ func (fm *Form) WndProc(msg uint32, wparam, lparam uintptr) uintptr {
 				action.onClick.Fire(NewEvent(fm, nil))
 			}
 		}
-	case w32.WM_APP:
-		println("here!")
 	case w32.WM_KEYDOWN:
 		// Accelerator support.
 		key := Key(wparam)
