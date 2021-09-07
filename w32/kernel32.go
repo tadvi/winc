@@ -17,6 +17,7 @@ var (
 	procMulDiv                     = modkernel32.NewProc("MulDiv")
 	procGetConsoleWindow           = modkernel32.NewProc("GetConsoleWindow")
 	procGetCurrentThread           = modkernel32.NewProc("GetCurrentThread")
+	procGetCurrentThreadId         = modkernel32.NewProc("GetCurrentThreadId")
 	procGetLogicalDrives           = modkernel32.NewProc("GetLogicalDrives")
 	procGetLogicalDriveStrings     = modkernel32.NewProc("GetLogicalDriveStringsW")
 	procGetUserDefaultLCID         = modkernel32.NewProc("GetUserDefaultLCID")
@@ -75,6 +76,12 @@ func GetConsoleWindow() HWND {
 
 func GetCurrentThread() HANDLE {
 	ret, _, _ := procGetCurrentThread.Call()
+
+	return HANDLE(ret)
+}
+
+func GetCurrentThreadId() HANDLE {
+	ret, _, _ := procGetCurrentThreadId.Call()
 
 	return HANDLE(ret)
 }

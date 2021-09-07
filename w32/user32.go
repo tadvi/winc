@@ -7,6 +7,7 @@ package w32
 
 import (
 	"fmt"
+	"runtime"
 	"syscall"
 	"unsafe"
 )
@@ -14,53 +15,56 @@ import (
 var (
 	moduser32 = syscall.NewLazyDLL("user32.dll")
 
-	procRegisterClassEx          = moduser32.NewProc("RegisterClassExW")
-	procLoadIcon                 = moduser32.NewProc("LoadIconW")
-	procLoadCursor               = moduser32.NewProc("LoadCursorW")
-	procShowWindow               = moduser32.NewProc("ShowWindow")
-	procShowWindowAsync          = moduser32.NewProc("ShowWindowAsync")
-	procUpdateWindow             = moduser32.NewProc("UpdateWindow")
-	procCreateWindowEx           = moduser32.NewProc("CreateWindowExW")
-	procAdjustWindowRect         = moduser32.NewProc("AdjustWindowRect")
-	procAdjustWindowRectEx       = moduser32.NewProc("AdjustWindowRectEx")
-	procDestroyWindow            = moduser32.NewProc("DestroyWindow")
-	procDefWindowProc            = moduser32.NewProc("DefWindowProcW")
-	procDefDlgProc               = moduser32.NewProc("DefDlgProcW")
-	procPostQuitMessage          = moduser32.NewProc("PostQuitMessage")
-	procGetMessage               = moduser32.NewProc("GetMessageW")
-	procTranslateMessage         = moduser32.NewProc("TranslateMessage")
-	procDispatchMessage          = moduser32.NewProc("DispatchMessageW")
-	procSendMessage              = moduser32.NewProc("SendMessageW")
-	procPostMessage              = moduser32.NewProc("PostMessageW")
-	procWaitMessage              = moduser32.NewProc("WaitMessage")
-	procSetWindowText            = moduser32.NewProc("SetWindowTextW")
-	procGetWindowTextLength      = moduser32.NewProc("GetWindowTextLengthW")
-	procGetWindowText            = moduser32.NewProc("GetWindowTextW")
-	procGetWindowRect            = moduser32.NewProc("GetWindowRect")
-	procMoveWindow               = moduser32.NewProc("MoveWindow")
-	procScreenToClient           = moduser32.NewProc("ScreenToClient")
-	procCallWindowProc           = moduser32.NewProc("CallWindowProcW")
-	procSetWindowLong            = moduser32.NewProc("SetWindowLongW")
-	procSetWindowLongPtr         = moduser32.NewProc("SetWindowLongW")
-	procGetWindowLong            = moduser32.NewProc("GetWindowLongW")
-	procGetWindowLongPtr         = moduser32.NewProc("GetWindowLongW")
-	procEnableWindow             = moduser32.NewProc("EnableWindow")
-	procIsWindowEnabled          = moduser32.NewProc("IsWindowEnabled")
-	procIsWindowVisible          = moduser32.NewProc("IsWindowVisible")
-	procSetFocus                 = moduser32.NewProc("SetFocus")
-	procGetFocus                 = moduser32.NewProc("GetFocus")
-	procSetActiveWindow          = moduser32.NewProc("SetActiveWindow")
-	procSetForegroundWindow      = moduser32.NewProc("SetForegroundWindow")
-	procBringWindowToTop         = moduser32.NewProc("BringWindowToTop")
-	procInvalidateRect           = moduser32.NewProc("InvalidateRect")
-	procGetClientRect            = moduser32.NewProc("GetClientRect")
-	procGetDC                    = moduser32.NewProc("GetDC")
-	procReleaseDC                = moduser32.NewProc("ReleaseDC")
-	procSetCapture               = moduser32.NewProc("SetCapture")
-	procReleaseCapture           = moduser32.NewProc("ReleaseCapture")
-	procGetWindowThreadProcessId = moduser32.NewProc("GetWindowThreadProcessId")
-	procMessageBox               = moduser32.NewProc("MessageBoxW")
-	procGetSystemMetrics         = moduser32.NewProc("GetSystemMetrics")
+	procRegisterClassEx               = moduser32.NewProc("RegisterClassExW")
+	procLoadIcon                      = moduser32.NewProc("LoadIconW")
+	procLoadCursor                    = moduser32.NewProc("LoadCursorW")
+	procShowWindow                    = moduser32.NewProc("ShowWindow")
+	procShowWindowAsync               = moduser32.NewProc("ShowWindowAsync")
+	procUpdateWindow                  = moduser32.NewProc("UpdateWindow")
+	procCreateWindowEx                = moduser32.NewProc("CreateWindowExW")
+	procAdjustWindowRect              = moduser32.NewProc("AdjustWindowRect")
+	procAdjustWindowRectEx            = moduser32.NewProc("AdjustWindowRectEx")
+	procDestroyWindow                 = moduser32.NewProc("DestroyWindow")
+	procDefWindowProc                 = moduser32.NewProc("DefWindowProcW")
+	procDefDlgProc                    = moduser32.NewProc("DefDlgProcW")
+	procPostQuitMessage               = moduser32.NewProc("PostQuitMessage")
+	procGetMessage                    = moduser32.NewProc("GetMessageW")
+	procTranslateMessage              = moduser32.NewProc("TranslateMessage")
+	procDispatchMessage               = moduser32.NewProc("DispatchMessageW")
+	procSendMessage                   = moduser32.NewProc("SendMessageW")
+	procPostMessage                   = moduser32.NewProc("PostMessageW")
+	procWaitMessage                   = moduser32.NewProc("WaitMessage")
+	procSetWindowText                 = moduser32.NewProc("SetWindowTextW")
+	procGetWindowTextLength           = moduser32.NewProc("GetWindowTextLengthW")
+	procGetWindowText                 = moduser32.NewProc("GetWindowTextW")
+	procGetWindowRect                 = moduser32.NewProc("GetWindowRect")
+	procGetWindowInfo                 = moduser32.NewProc("GetWindowInfo")
+	procSetWindowCompositionAttribute = moduser32.NewProc("SetWindowCompositionAttribute")
+	procMoveWindow                    = moduser32.NewProc("MoveWindow")
+	procScreenToClient                = moduser32.NewProc("ScreenToClient")
+	procCallWindowProc                = moduser32.NewProc("CallWindowProcW")
+	procSetWindowLong                 = moduser32.NewProc("SetWindowLongW")
+	procSetWindowLongPtr              = moduser32.NewProc("SetWindowLongW")
+	procGetWindowLong                 = moduser32.NewProc("GetWindowLongW")
+	procGetWindowLongPtr              = moduser32.NewProc("GetWindowLongW")
+	procEnableWindow                  = moduser32.NewProc("EnableWindow")
+	procIsWindowEnabled               = moduser32.NewProc("IsWindowEnabled")
+	procIsWindowVisible               = moduser32.NewProc("IsWindowVisible")
+	procSetFocus                      = moduser32.NewProc("SetFocus")
+	procGetFocus                      = moduser32.NewProc("GetFocus")
+	procSetActiveWindow               = moduser32.NewProc("SetActiveWindow")
+	procSetForegroundWindow           = moduser32.NewProc("SetForegroundWindow")
+	procBringWindowToTop              = moduser32.NewProc("BringWindowToTop")
+	procInvalidateRect                = moduser32.NewProc("InvalidateRect")
+	procGetClientRect                 = moduser32.NewProc("GetClientRect")
+	procGetDC                         = moduser32.NewProc("GetDC")
+	procReleaseDC                     = moduser32.NewProc("ReleaseDC")
+	procSetCapture                    = moduser32.NewProc("SetCapture")
+	procReleaseCapture                = moduser32.NewProc("ReleaseCapture")
+	procGetWindowThreadProcessId      = moduser32.NewProc("GetWindowThreadProcessId")
+	procMessageBox                    = moduser32.NewProc("MessageBoxW")
+	procGetSystemMetrics              = moduser32.NewProc("GetSystemMetrics")
+	procPostThreadMessageW            = moduser32.NewProc("PostThreadMessageW")
 	//procSysColorBrush            = moduser32.NewProc("GetSysColorBrush")
 	procCopyRect          = moduser32.NewProc("CopyRect")
 	procEqualRect         = moduser32.NewProc("EqualRect")
@@ -79,8 +83,9 @@ var (
 	procDrawIcon          = moduser32.NewProc("DrawIcon")
 	procCreateMenu        = moduser32.NewProc("CreateMenu")
 	//procSetMenu                  = moduser32.NewProc("SetMenu")
-	procDestroyMenu     = moduser32.NewProc("DestroyMenu")
-	procCreatePopupMenu = moduser32.NewProc("CreatePopupMenu")
+	procDestroyMenu        = moduser32.NewProc("DestroyMenu")
+	procCreatePopupMenu    = moduser32.NewProc("CreatePopupMenu")
+	procCheckMenuRadioItem = moduser32.NewProc("CheckMenuRadioItem")
 	//procDrawMenuBar     = moduser32.NewProc("DrawMenuBar")
 	//procInsertMenuItem                = moduser32.NewProc("InsertMenuItemW") // FIXIT:
 
@@ -141,7 +146,14 @@ var (
 
 	setScrollInfo, _ = syscall.GetProcAddress(libuser32, "SetScrollInfo")
 	getScrollInfo, _ = syscall.GetProcAddress(libuser32, "GetScrollInfo")
+
+	mainThread HANDLE
 )
+
+func init() {
+	runtime.LockOSThread()
+	mainThread = GetCurrentThreadId()
+}
 
 func GET_X_LPARAM(lp uintptr) int32 {
 	return int32(int16(LOWORD(uint32(lp))))
@@ -195,6 +207,15 @@ func UpdateWindow(hwnd HWND) bool {
 	return ret != 0
 }
 
+func PostThreadMessage(threadID HANDLE, msg int, wp, lp uintptr) {
+	procPostThreadMessageW.Call(threadID, uintptr(msg), wp, lp)
+}
+
+func PostMainThreadMessage(msg uint32, wp, lp uintptr) bool {
+	ret, _, _ := procPostThreadMessageW.Call(mainThread, uintptr(msg), wp, lp)
+	return ret != 0
+}
+
 func CreateWindowEx(exStyle uint, className, windowName *uint16,
 	style uint, x, y, width, height int, parent HWND, menu HMENU,
 	instance HINSTANCE, param unsafe.Pointer) HWND {
@@ -235,10 +256,19 @@ func AdjustWindowRect(rect *RECT, style uint, menu bool) bool {
 }
 
 func DestroyWindow(hwnd HWND) bool {
-	ret, _, _ := procDestroyWindow.Call(
-		uintptr(hwnd))
-
+	ret, _, _ := procDestroyWindow.Call(hwnd)
 	return ret != 0
+}
+
+func SetWindowCompositionAttribute(hwnd HWND, data *WINDOWCOMPOSITIONATTRIBDATA) bool {
+	if procSetWindowCompositionAttribute != nil {
+		ret, _, _ := procSetWindowCompositionAttribute.Call(
+			hwnd,
+			uintptr(unsafe.Pointer(data)),
+		)
+		return ret != 0
+	}
+	return false
 }
 
 func DefWindowProc(hwnd HWND, msg uint32, wParam, lParam uintptr) uintptr {
@@ -330,6 +360,14 @@ func GetWindowTextLength(hwnd HWND) int {
 	return int(ret)
 }
 
+func GetWindowInfo(hwnd HWND, info *WINDOWINFO) int {
+	ret, _, _ := procGetWindowInfo.Call(
+		hwnd,
+		uintptr(unsafe.Pointer(info)),
+	)
+	return int(ret)
+}
+
 func GetWindowText(hwnd HWND) string {
 	textLen := GetWindowTextLength(hwnd) + 1
 
@@ -345,7 +383,7 @@ func GetWindowText(hwnd HWND) string {
 func GetWindowRect(hwnd HWND) *RECT {
 	var rect RECT
 	procGetWindowRect.Call(
-		uintptr(hwnd),
+		hwnd,
 		uintptr(unsafe.Pointer(&rect)))
 
 	return &rect
@@ -716,6 +754,18 @@ func SetMenu(hWnd HWND, hMenu HMENU) bool {
 	return ret != 0
 }
 
+// https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-checkmenuradioitem
+func SelectRadioMenuItem(menuID uint16, startID uint16, endID uint16, hwnd HWND) bool {
+	ret, _, _ := procCheckMenuRadioItem.Call(
+		hwnd,
+		uintptr(startID),
+		uintptr(endID),
+		uintptr(menuID),
+		MF_BYCOMMAND)
+	return ret != 0
+
+}
+
 func CreatePopupMenu() HMENU {
 	ret, _, _ := procCreatePopupMenu.Call(0,
 		0,
@@ -931,7 +981,7 @@ func BeginPaint(hwnd HWND, paint *PAINTSTRUCT) HDC {
 }
 
 func EndPaint(hwnd HWND, paint *PAINTSTRUCT) {
-	procBeginPaint.Call(
+	procEndPaint.Call(
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(paint)))
 }
@@ -1170,7 +1220,7 @@ func SetWindowPlacement(hWnd HWND, lpwndpl *WINDOWPLACEMENT) bool {
 
 func SetScrollInfo(hwnd HWND, fnBar int32, lpsi *SCROLLINFO, fRedraw bool) int32 {
 	ret, _, _ := syscall.Syscall6(setScrollInfo, 4,
-		uintptr(hwnd),
+		hwnd,
 		uintptr(fnBar),
 		uintptr(unsafe.Pointer(lpsi)),
 		uintptr(BoolToBOOL(fRedraw)),
@@ -1182,7 +1232,7 @@ func SetScrollInfo(hwnd HWND, fnBar int32, lpsi *SCROLLINFO, fRedraw bool) int32
 
 func GetScrollInfo(hwnd HWND, fnBar int32, lpsi *SCROLLINFO) bool {
 	ret, _, _ := syscall.Syscall(getScrollInfo, 3,
-		uintptr(hwnd),
+		hwnd,
 		uintptr(fnBar),
 		uintptr(unsafe.Pointer(lpsi)))
 

@@ -6,6 +6,7 @@
 package w32
 
 import (
+	"fmt"
 	"unsafe"
 )
 
@@ -177,46 +178,49 @@ import (
 // WORD                  uint16
 // WPARAM                UINT_PTR
 type (
-	ATOM            uint16
-	BOOL            int32
-	COLORREF        uint32
-	DWM_FRAME_COUNT uint64
-	DWORD           uint32
-	HACCEL          HANDLE
-	HANDLE          uintptr
-	HBITMAP         HANDLE
-	HBRUSH          HANDLE
-	HCURSOR         HANDLE
-	HDC             HANDLE
-	HDROP           HANDLE
-	HDWP            HANDLE
-	HENHMETAFILE    HANDLE
-	HFONT           HANDLE
-	HGDIOBJ         HANDLE
-	HGLOBAL         HANDLE
-	HGLRC           HANDLE
-	HHOOK           HANDLE
-	HICON           HANDLE
-	HIMAGELIST      HANDLE
-	HINSTANCE       HANDLE
-	HKEY            HANDLE
-	HKL             HANDLE
-	HMENU           HANDLE
-	HMODULE         HANDLE
-	HMONITOR        HANDLE
-	HPEN            HANDLE
-	HRESULT         int32
-	HRGN            HANDLE
-	HRSRC           HANDLE
-	HTHUMBNAIL      HANDLE
-	HWND            HANDLE
-	LPARAM          uintptr
-	LPCVOID         unsafe.Pointer
-	LRESULT         uintptr
-	PVOID           unsafe.Pointer
-	QPC_TIME        uint64
-	ULONG_PTR       uintptr
-	WPARAM          uintptr
+	ATOM            = uint16
+	BOOL            = int32
+	COLORREF        = uint32
+	DWM_FRAME_COUNT = uint64
+	WORD            = uint16
+	DWORD           = uint32
+	HACCEL          = HANDLE
+	HANDLE          = uintptr
+	HBITMAP         = HANDLE
+	HBRUSH          = HANDLE
+	HCURSOR         = HANDLE
+	HDC             = HANDLE
+	HDROP           = HANDLE
+	HDWP            = HANDLE
+	HENHMETAFILE    = HANDLE
+	HFONT           = HANDLE
+	HGDIOBJ         = HANDLE
+	HGLOBAL         = HANDLE
+	HGLRC           = HANDLE
+	HHOOK           = HANDLE
+	HICON           = HANDLE
+	HIMAGELIST      = HANDLE
+	HINSTANCE       = HANDLE
+	HKEY            = HANDLE
+	HKL             = HANDLE
+	HMENU           = HANDLE
+	HMODULE         = HANDLE
+	HMONITOR        = HANDLE
+	HPEN            = HANDLE
+	HRESULT         = int32
+	HRGN            = HANDLE
+	HRSRC           = HANDLE
+	HTHUMBNAIL      = HANDLE
+	HWND            = HANDLE
+	LPARAM          = uintptr
+	LPCVOID         = unsafe.Pointer
+	LRESULT         = uintptr
+	PVOID           = unsafe.Pointer
+	QPC_TIME        = uint64
+	ULONG_PTR       = uintptr
+	SIZE_T          = ULONG_PTR
+	WPARAM          = uintptr
+	UINT            = uint
 )
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd162805.aspx
@@ -227,6 +231,10 @@ type POINT struct {
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd162897.aspx
 type RECT struct {
 	Left, Top, Right, Bottom int32
+}
+
+func (r *RECT) String() string {
+	return fmt.Sprintf("RECT (%p): Left: %d, Top: %d, Right: %d, Bottom: %d", r, r.Left, r.Top, r.Right, r.Bottom)
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms633577.aspx
@@ -258,6 +266,15 @@ type MSG struct {
 	LParam  uintptr
 	Time    uint32
 	Pt      POINT
+}
+
+// https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-minmaxinfo
+type MINMAXINFO struct {
+	PtReserved     POINT
+	PtMaxSize      POINT
+	PtMaxPosition  POINT
+	PtMinTrackSize POINT
+	PtMaxTrackSize POINT
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd145037.aspx
@@ -682,6 +699,73 @@ type SERVICE_STATUS struct {
 	DwWaitHint                uint32
 }
 
+/* -------------------------
+    Undocumented API
+------------------------- */
+
+type ACCENT_STATE DWORD
+
+const (
+	ACCENT_DISABLED                   ACCENT_STATE = 0
+	ACCENT_ENABLE_GRADIENT            ACCENT_STATE = 1
+	ACCENT_ENABLE_TRANSPARENTGRADIENT ACCENT_STATE = 2
+	ACCENT_ENABLE_BLURBEHIND          ACCENT_STATE = 3
+	ACCENT_ENABLE_ACRYLICBLURBEHIND   ACCENT_STATE = 4 // RS4 1803
+	ACCENT_ENABLE_HOSTBACKDROP        ACCENT_STATE = 5 // RS5 1809
+	ACCENT_INVALID_STATE              ACCENT_STATE = 6
+)
+
+type ACCENT_POLICY struct {
+	AccentState   ACCENT_STATE
+	AccentFlags   DWORD
+	GradientColor DWORD
+	AnimationId   DWORD
+}
+
+type WINDOWCOMPOSITIONATTRIBDATA struct {
+	Attrib WINDOWCOMPOSITIONATTRIB
+	PvData PVOID
+	CbData SIZE_T
+}
+
+type WINDOWCOMPOSITIONATTRIB DWORD
+
+const (
+	WCA_UNDEFINED                     WINDOWCOMPOSITIONATTRIB = 0
+	WCA_NCRENDERING_ENABLED           WINDOWCOMPOSITIONATTRIB = 1
+	WCA_NCRENDERING_POLICY            WINDOWCOMPOSITIONATTRIB = 2
+	WCA_TRANSITIONS_FORCEDISABLED     WINDOWCOMPOSITIONATTRIB = 3
+	WCA_ALLOW_NCPAINT                 WINDOWCOMPOSITIONATTRIB = 4
+	WCA_CAPTION_BUTTON_BOUNDS         WINDOWCOMPOSITIONATTRIB = 5
+	WCA_NONCLIENT_RTL_LAYOUT          WINDOWCOMPOSITIONATTRIB = 6
+	WCA_FORCE_ICONIC_REPRESENTATION   WINDOWCOMPOSITIONATTRIB = 7
+	WCA_EXTENDED_FRAME_BOUNDS         WINDOWCOMPOSITIONATTRIB = 8
+	WCA_HAS_ICONIC_BITMAP             WINDOWCOMPOSITIONATTRIB = 9
+	WCA_THEME_ATTRIBUTES              WINDOWCOMPOSITIONATTRIB = 10
+	WCA_NCRENDERING_EXILED            WINDOWCOMPOSITIONATTRIB = 11
+	WCA_NCADORNMENTINFO               WINDOWCOMPOSITIONATTRIB = 12
+	WCA_EXCLUDED_FROM_LIVEPREVIEW     WINDOWCOMPOSITIONATTRIB = 13
+	WCA_VIDEO_OVERLAY_ACTIVE          WINDOWCOMPOSITIONATTRIB = 14
+	WCA_FORCE_ACTIVEWINDOW_APPEARANCE WINDOWCOMPOSITIONATTRIB = 15
+	WCA_DISALLOW_PEEK                 WINDOWCOMPOSITIONATTRIB = 16
+	WCA_CLOAK                         WINDOWCOMPOSITIONATTRIB = 17
+	WCA_CLOAKED                       WINDOWCOMPOSITIONATTRIB = 18
+	WCA_ACCENT_POLICY                 WINDOWCOMPOSITIONATTRIB = 19
+	WCA_FREEZE_REPRESENTATION         WINDOWCOMPOSITIONATTRIB = 20
+	WCA_EVER_UNCLOAKED                WINDOWCOMPOSITIONATTRIB = 21
+	WCA_VISUAL_OWNER                  WINDOWCOMPOSITIONATTRIB = 22
+	WCA_HOLOGRAPHIC                   WINDOWCOMPOSITIONATTRIB = 23
+	WCA_EXCLUDED_FROM_DDA             WINDOWCOMPOSITIONATTRIB = 24
+	WCA_PASSIVEUPDATEMODE             WINDOWCOMPOSITIONATTRIB = 25
+	WCA_USEDARKMODECOLORS             WINDOWCOMPOSITIONATTRIB = 26
+	WCA_CORNER_STYLE                  WINDOWCOMPOSITIONATTRIB = 27
+	WCA_PART_COLOR                    WINDOWCOMPOSITIONATTRIB = 28
+	WCA_DISABLE_MOVESIZE_FEEDBACK     WINDOWCOMPOSITIONATTRIB = 29
+	WCA_LAST                          WINDOWCOMPOSITIONATTRIB = 30
+)
+
+// -------------------------
+
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms684225.aspx
 type MODULEENTRY32 struct {
 	Size         uint32
@@ -832,6 +916,44 @@ type MONITORINFO struct {
 	RcMonitor RECT
 	RcWork    RECT
 	DwFlags   uint32
+}
+
+type WINDOWINFO struct {
+	CbSize          DWORD
+	RcWindow        RECT
+	RcClient        RECT
+	DwStyle         DWORD
+	DwExStyle       DWORD
+	DwWindowStatus  DWORD
+	CxWindowBorders UINT
+	CyWindowBorders UINT
+	AtomWindowType  ATOM
+	WCreatorVersion WORD
+}
+
+type MONITOR_DPI_TYPE int32
+
+const (
+	MDT_EFFECTIVE_DPI MONITOR_DPI_TYPE = 0
+	MDT_ANGULAR_DPI   MONITOR_DPI_TYPE = 1
+	MDT_RAW_DPI       MONITOR_DPI_TYPE = 2
+	MDT_DEFAULT       MONITOR_DPI_TYPE = 0
+)
+
+func (w *WINDOWINFO) isStyle(style DWORD) bool {
+	return w.DwStyle&style == style
+}
+
+func (w *WINDOWINFO) IsPopup() bool {
+	return w.isStyle(WS_POPUP)
+}
+
+func (m *MONITORINFO) Dump() {
+	fmt.Printf("MONITORINFO (%p)\n", m)
+	fmt.Printf("  CbSize   : %d\n", m.CbSize)
+	fmt.Printf("  RcMonitor: %s\n", &m.RcMonitor)
+	fmt.Printf("  RcWork   : %s\n", &m.RcWork)
+	fmt.Printf("  DwFlags  : %d\n", m.DwFlags)
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd145066.aspx
