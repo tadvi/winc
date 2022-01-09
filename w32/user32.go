@@ -124,6 +124,7 @@ var (
 	procMonitorFromRect               = moduser32.NewProc("MonitorFromRect")
 	procMonitorFromWindow             = moduser32.NewProc("MonitorFromWindow")
 	procGetMonitorInfo                = moduser32.NewProc("GetMonitorInfoW")
+	procGetDpiForSystem               = moduser32.NewProc("GetDpiForSystem")
 	procEnumDisplayMonitors           = moduser32.NewProc("EnumDisplayMonitors")
 	procEnumDisplaySettingsEx         = moduser32.NewProc("EnumDisplaySettingsExW")
 	procChangeDisplaySettingsEx       = moduser32.NewProc("ChangeDisplaySettingsExW")
@@ -1085,6 +1086,11 @@ func MonitorFromWindow(hwnd HWND, dwFlags uint32) HMONITOR {
 		uintptr(dwFlags),
 	)
 	return HMONITOR(ret)
+}
+
+func GetDpiForSystem() uint {
+	ret, _, _ := procGetDpiForSystem.Call()
+	return ret
 }
 
 func GetMonitorInfo(hMonitor HMONITOR, lmpi *MONITORINFO) bool {
