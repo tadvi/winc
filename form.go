@@ -245,9 +245,7 @@ func (fm *Form) WndProc(msg uint32, wparam, lparam uintptr) uintptr {
 		code := uint32(lparam)
 		fm.onKeyDown.Fire(NewEvent(fm, &KeyDownEventData{VKey: int(key), Code: int(code)}))
 
-	case w32.WM_KEYUP:
 		// Accelerator support.
-		key := Key(wparam)
 		if uint32(lparam)>>30 == 0 {
 			// Using TranslateAccelerators refused to work, so we handle them
 			// ourselves, at least for now.
