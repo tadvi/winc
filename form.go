@@ -24,6 +24,7 @@ type Form struct {
 	isFullscreen            bool
 	previousWindowStyle     uint32
 	previousWindowPlacement w32.WINDOWPLACEMENT
+	onKeyDown               EventManager
 }
 
 func NewCustomForm(parent Controller, exStyle int, dwStyle uint) *Form {
@@ -238,6 +239,13 @@ func (fm *Form) WndProc(msg uint32, wparam, lparam uintptr) uintptr {
 			}
 		}
 	case w32.WM_KEYDOWN:
+
+		// key down support.
+		key := Key(wparam)
+		code := uint32(lparam)
+		fm.onKeyDown.Fire(NewEvent(fm, &KeyDownEventData{VKey: int(key), Code: int(code)}))
+
+	case w32.WM_KEYUP:
 		// Accelerator support.
 		key := Key(wparam)
 		if uint32(lparam)>>30 == 0 {
@@ -284,4 +292,8 @@ func (fm *Form) WndProc(msg uint32, wparam, lparam uintptr) uintptr {
 	}
 
 	return w32.DefWindowProc(fm.hwnd, msg, wparam, lparam)
+}
+
+func (fm *Form) OnKeyDown() *EventManager {
+	return &fm.onKeyDown
 }

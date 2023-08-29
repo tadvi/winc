@@ -43,6 +43,9 @@ type LabelEditEventData struct {
 type KeyUpEventData struct {
 	VKey, Code int
 }
+type KeyDownEventData struct {
+	VKey, Code int
+}
 
 type SizeEventData struct {
 	Type uint
