@@ -1,3 +1,3 @@
-module github.com/tadvi/winc
+module github.com/neurlang/winc
 
 go 1.12
